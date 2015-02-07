@@ -1,0 +1,19 @@
+Write a function that takes in a person's name, and prints out a greeting. 
+
+The greeting must be at least three lines, and the person's name must be in each line. 
+
+Use your function to greet at least three different people. 
+
+Bonus: Store your three people in a list, and call your function from a for loop. 
+     
+Write a function that takes in two numbers, and adds them together. Make your function print out a sentence showing the two numbers, and the result. 
+
+Call your function with three different sets of numbers. 
+
+Modify Addition Calculator so that your function returns the sum of the two numbers. The printing should happen outside of the function. 
+      
+Bonus Challenge!
+
+Many songs follow a familiar variation of the pattern of verse, refrain, verse, refrain. The verses are the parts of the song that tell a story - they are not repeated in the song. The refrain is the part of the song that is repeated throughout the song. 
+
+Find the lyrics to a song you like that follows this pattern. Write a program that prints out the lyrics to this song, using as few lines of Python code as possible.
