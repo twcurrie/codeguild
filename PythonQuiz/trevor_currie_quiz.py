@@ -44,9 +44,9 @@ def problem_9(input_integer):
 def problem_10():
     ''' Fizz Buzz'''
     for integer in range(101):
-        string = str(integer)
+        string = str(integer)+' '
         if integer%3 == 0:
-            string = " Fizz"
+            string += "Fizz"
         if integer%5 == 0:
             string += "Buzz"
         print string
