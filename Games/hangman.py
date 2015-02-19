@@ -178,10 +178,11 @@ class Game(object):
         for letter in self.possible_guesses:
             letters_chosen += letter+" "
         print letters_chosen
+        
         print "\n Your word:"
         print_line = "  "
         for index,item in enumerate(self.letter_list):
-            if self.display_list[index]:
+            if self.display_list[index] or not self.game_on:
                 print_line += item
             else:
                 print_line += "_"
