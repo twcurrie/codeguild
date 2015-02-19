@@ -5,15 +5,87 @@ import time
 import random 
 import string
 
+class Gameboard(object):
+    def __init__(self):
+        """  Constructor function for gameboard """
+
+        self.hidden_characters = []
+        self.game_board_array = [] 
+        self.message = ""
+
+        game_board = []
+        game_board.append("             __________")
+        game_board.append("            |          |")
+        game_board.append("            |          |")
+        game_board.append("            |          |")
+        game_board.append("            |         ( )")
+        game_board.append("            |         _|_") 
+        game_board.append("            |        / | \\")
+        game_board.append("            |          |  ")
+        game_board.append("            |         / \\")
+        game_board.append("            |       _/   \_")
+        game_board.append("            |              ")
+        game_board.append("            |             ")
+        game_board.append("      ______|______       ")
+    
+        for line_number,line in enumerate(game_board):
+            game_board_line = []
+            for character_number,character in enumerate(line):
+                game_board_line.append(character)
+    
+                if character != " ":
+                    hidden_character = {}
+                    hidden_character["position"] = [line_number,character_number]
+                    hidden_character["character"] = character
+                    self.hidden_characters.append(hidden_character)
+                    game_board_line[character_number] = " "
+    
+            self.game_board_array.append(game_board_line)
+        
+        self.hidden_characters.sort(key = lambda character: \
+                (math.atan2(-(15-character["position"][1]),(15-character["position"][0]))))
+
+
+    def update(self,total_characters_to_add):
+        """ Updates game board hidden characters based on
+            ratio of wrong guesses to allowed guesses """
+
+        for number in range(total_characters_to_add):
+            position = self.hidden_characters[number]["position"]
+            self.game_board_array[position[0]][position[1]] = \
+                    self.hidden_characters[number]["character"]
+
+
+    def __str__(self):
+        """ Prints game board on fresh screen """
+        
+        call(["clear"])
+        string = ""
+        for game_board_line in self.game_board_array:
+            string += "".join(game_board_line)
+            string += "\n"
+        string += self.message
+
+        return string
+
+class Word(object):
+    def __init__(self, word):
+        self.letter_list = []
+        self.display_list = []
+        
+        for letter in word:
+            self.letter_list.append(letter)
+            self.display_list.append(False)
+
+    
 class Game(object):
     def __init__(self):
         """ Constructor function, all attributes empty"""
         
         self.possible_guesses = list(string.ascii_lowercase)
         self.wrong_guesses = []
-        self.letter_list = []
-        self.display_list = []
         self.game_on = True
+        self.board = Gameboard()
 
     
     def start_game(self):
@@ -23,17 +95,12 @@ class Game(object):
         print("Welcome to hangman!")
         print("How long of a word to you want?")
         self.word_length = input("")
-        self.word = self.pick_word()
-        for letter in self.word:
-            self.letter_list.append(letter)
-            self.display_list.append(False)
+        self.word = Word(self.pick_word())
 
         print("How many guesses do you want?")
         self.allowed_guesses = input("")
         if self.allowed_guesses >= 26:
             print "There's only 26 letters in the alphabet..."
-        
-        self.initialize_game_board()
 
 
     def pick_word(self):
@@ -56,7 +123,7 @@ class Game(object):
                 if word.startswith(starting_letter):
                     if len(word) == self.word_length:
                         possible_words.append(word)
-        
+            
             if tries > 5:
                 print "I had a hard time finding a word, let me try again..."
                 print("How long of a word to you want?")
@@ -64,45 +131,6 @@ class Game(object):
             tries += 1
         return random.choice(possible_words)
 
-    
-    def initialize_game_board(self):
-        """ Sets up game board for printing """
-        
-        game_board = []
-        game_board.append("             __________")
-        game_board.append("            |          |")
-        game_board.append("            |          |")
-        game_board.append("            |          |")
-        game_board.append("            |         ( )")
-        game_board.append("            |         _|_") 
-        game_board.append("            |        / | \\")
-        game_board.append("            |          |  ")
-        game_board.append("            |         / \\")
-        game_board.append("            |       _/   \_")
-        game_board.append("            |              ")
-        game_board.append("            |             ")
-        game_board.append("      ______|______       ")
-    
-        self.hidden_characters = []
-        
-        self.game_board_array = [] 
-    
-        for line_number,line in enumerate(game_board):
-            game_board_line = []
-            for character_number,character in enumerate(line):
-                game_board_line.append(character)
-    
-                if character != " ":
-                    hidden_character = {}
-                    hidden_character["position"] = [line_number,character_number]
-                    hidden_character["character"] = character
-                    self.hidden_characters.append(hidden_character)
-                    game_board_line[character_number] = " "
-    
-            self.game_board_array.append(game_board_line)
-        
-        self.hidden_characters.sort(key = lambda character: (math.atan2(-(15-character["position"][1]),(15-character["position"][0]))))
-    
 
     def guess_letter(self):
         """ Prompts user to guess letter, 
@@ -113,16 +141,20 @@ class Game(object):
         guessed_letter = raw_input("").strip().lower()
         self.possible_guesses = ["X" if letter == guessed_letter else letter for letter in self.possible_guesses]
 
-        if guessed_letter not in self.letter_list:
+        if guessed_letter not in self.word.letter_list:
             self.wrong_guesses.append(guessed_letter) 
             message = "You've guessed wrong"
         else:
-            indices = [i for i, x in enumerate(self.letter_list) if x == guessed_letter] 
+            indices = [i for i, x in enumerate(self.word.letter_list) if x == guessed_letter] 
             for index in indices:
-                self.display_list[index] = True
+                self.word.display_list[index] = True
             message = "Great guess!"
+        
+        total_hidden_characters = len(self.board.hidden_characters)
+        ratio = float(len(self.wrong_guesses))/float(self.allowed_guesses)
+        total_characters_to_add = int(math.floor(total_hidden_characters*ratio)) 
             
-        self.update_game_board()
+        self.board.update(total_characters_to_add)
         
         return message
      
@@ -133,10 +165,10 @@ class Game(object):
 
         true_count = 0
         message = None
-        for index,letter in enumerate(self.letter_list):
-            if self.display_list[index]:
+        for index,letter in enumerate(self.word.letter_list):
+            if self.word.display_list[index]:
                 true_count += 1
-        if true_count == len(self.display_list):
+        if true_count == len(self.word.display_list):
             message = "Victory is yours!"
             self.game_on = False
 
@@ -146,48 +178,25 @@ class Game(object):
         return message
      
 
-    def update_game_board(self):
-        """ Updates game board hidden characters based on
-            ratio of wrong guesses to allowed guesses """
-
-        total_hidden_characters = len(self.hidden_characters)
-        ratio = float(len(self.wrong_guesses))/float(self.allowed_guesses)
-        total_characters_to_add = int(math.floor(total_hidden_characters*ratio)) 
-        for number in range(total_characters_to_add):
-            position = self.hidden_characters[number]["position"]
-            self.game_board_array[position[0]][position[1]] = \
-                    self.hidden_characters[number]["character"]
-
-
-    def print_game_board(self,message):
-        """ Prints game board on fresh screen """
-        
-        call(["clear"])
-        for game_board_line in self.game_board_array:
-            print "".join(game_board_line)
-
-        print "\n"+message
-        self.print_word_status()
-    
-    
-    def print_word_status(self):
+    def __str__(self):
         """ Prints possible letters and current word status """
-        
-        print "\n Possible Letters: "
+        string = "\n Possible Letters: "
         letters_chosen = " "
         for letter in self.possible_guesses:
             letters_chosen += letter+" "
-        print letters_chosen
+        string += "\n" + letters_chosen
         
-        print "\n Your word:"
+        string += "\n Your word: \n"
         print_line = "  "
-        for index,item in enumerate(self.letter_list):
-            if self.display_list[index] or not self.game_on:
+        for index,item in enumerate(self.word.letter_list):
+            if self.word.display_list[index] or not self.game_on:
                 print_line += item
             else:
                 print_line += "_"
             print_line += " "
-        print print_line
+        string += print_line
+
+        return string
 
 
 if __name__ == "__main__":
@@ -199,12 +208,16 @@ if __name__ == "__main__":
             hangman.start_game()
             message = "Let's get started!"
             while hangman.game_on:
-                hangman.print_game_board(message)
+                print hangman.board
+                print hangman
                 message = hangman.guess_letter()
                 state_message = hangman.check_state()
                 if state_message is not None:
-                    message = state_message
-            hangman.print_game_board(message)
+                    hangman.board.message = state_message
+                else:
+                    hangman.board.message = message
+            print hangman.board
+            print hangman
             print "\nWould you like to play again? (y/n)"
         else:
             call(["clear"])
