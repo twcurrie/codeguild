@@ -70,14 +70,31 @@ class Gameboard(object):
 
 class Word(object):
     def __init__(self, word):
+        """ Initializes word with letter list and display list """
+
         self.letter_list = []
         self.display_list = []
+        self.show = False
         
         for letter in word:
             self.letter_list.append(letter)
             self.display_list.append(False)
 
-    
+    def __str__(self):
+        """ Prints word out with blanks or letters filled in """
+        
+        string = "\n Your word: \n"
+        print_line = "  "
+        for index,item in enumerate(self.letter_list):
+            if self.display_list[index] or self.show:
+                print_line += item
+            else:
+                print_line += "_"
+            print_line += " "
+        string += print_line
+        return string
+
+
 class Game(object):
     def __init__(self):
         """ Constructor function, all attributes empty"""
@@ -87,14 +104,27 @@ class Game(object):
         self.game_on = True
         self.board = Gameboard()
 
-    
-    def start_game(self):
-        """ Starts game, establishes desired length and allowed_guesses"""
+
+    def __str__(self):
+        """ Prints possible letters and current word status """
+        string = "\n Possible Letters: "
+        letters_chosen = " "
+        for letter in self.possible_guesses:
+            letters_chosen += letter+" "
+        string += "\n" + letters_chosen
         
+        return string
+    
+    def get_preferences(self):
+        """ Gets user preferences for desired length and allowed_guesses"""
+        
+        self.__init__()   
         call(["clear"])
         print("Welcome to hangman!")
         print("How long of a word to you want?")
+        
         self.word_length = input("")
+
         self.word = Word(self.pick_word())
 
         print("How many guesses do you want?")
@@ -156,6 +186,9 @@ class Game(object):
             
         self.board.update(total_characters_to_add)
         
+        if self.check_state():
+            message = self.check_state()
+
         return message
      
 
@@ -175,51 +208,40 @@ class Game(object):
         elif len(self.wrong_guesses) >= self.allowed_guesses:
             message = "Game Over."
             self.game_on = False
+            self.word.show = True
+
         return message
-     
+    
 
-    def __str__(self):
-        """ Prints possible letters and current word status """
-        string = "\n Possible Letters: "
-        letters_chosen = " "
-        for letter in self.possible_guesses:
-            letters_chosen += letter+" "
-        string += "\n" + letters_chosen
-        
-        string += "\n Your word: \n"
-        print_line = "  "
-        for index,item in enumerate(self.word.letter_list):
-            if self.word.display_list[index] or not self.game_on:
-                print_line += item
+    def print_state(self):
+        """ Prints all the game attributes """
+
+        print self.board
+        print self
+        print self.word
+    
+
+    def play(self):
+        """ Main loop for game play, uses internal methods """
+
+        print "Would you like to play hangman? (y/n)"
+        while True:
+            choice = raw_input("")
+            if choice.strip().lower() == "y":
+                message = "Then, let's get started!"
+                self.get_preferences()
+                
+                while self.game_on:
+                    self.print_state()
+                    self.board.message = self.guess_letter()
+                
+                self.print_state()
+                print "\nWould you like to play again? (y/n)"
             else:
-                print_line += "_"
-            print_line += " "
-        string += print_line
-
-        return string
-
+                call(["clear"])
+                break
 
 if __name__ == "__main__":
-    print "Would you like to play hangman? (y/n)"
-    while True:
-        choice = raw_input("")
-        if choice.strip().lower() == "y":
-            hangman = Game()
-            hangman.start_game()
-            message = "Let's get started!"
-            while hangman.game_on:
-                print hangman.board
-                print hangman
-                message = hangman.guess_letter()
-                state_message = hangman.check_state()
-                if state_message is not None:
-                    hangman.board.message = state_message
-                else:
-                    hangman.board.message = message
-            print hangman.board
-            print hangman
-            print "\nWould you like to play again? (y/n)"
-        else:
-            call(["clear"])
-            break
+    hangman = Game()
+    hangman.play()
 
