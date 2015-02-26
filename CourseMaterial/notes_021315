@@ -1,0 +1,7 @@
+upon defining an instance of a class, python runs: 
+1.) object.__new__()
+2.) object.__init__()
+
+when retrieving attributes of a class, like "object.attribute":
+3.) object.__getattribute__()
+4.) object.__dict__()

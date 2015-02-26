@@ -137,6 +137,7 @@ class Game(object):
         """ Pick word from dictionary file of chosen length."""
         
         dictionary_file = "wordsEn.txt" #TODO: ensure file is in PWD
+        # dictionary_file = "/usr/share/dict/words" #if Linux
 
         with open(dictionary_file) as open_file:
             word_list = open_file.read().splitlines()
@@ -174,17 +175,17 @@ class Game(object):
         if guessed_letter not in self.word.letter_list:
             self.wrong_guesses.append(guessed_letter) 
             message = "You've guessed wrong"
+            
+            total_hidden_characters = len(self.board.hidden_characters)
+            ratio = float(len(self.wrong_guesses))/float(self.allowed_guesses)
+            total_characters_to_add = int(math.floor(total_hidden_characters*ratio)) 
+            
+            self.board.update(total_characters_to_add)
         else:
             indices = [i for i, x in enumerate(self.word.letter_list) if x == guessed_letter] 
             for index in indices:
                 self.word.display_list[index] = True
             message = "Great guess!"
-        
-        total_hidden_characters = len(self.board.hidden_characters)
-        ratio = float(len(self.wrong_guesses))/float(self.allowed_guesses)
-        total_characters_to_add = int(math.floor(total_hidden_characters*ratio)) 
-            
-        self.board.update(total_characters_to_add)
         
         if self.check_state():
             message = self.check_state()
