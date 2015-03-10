@@ -8,4 +8,5 @@ Code Challenges, Quizzes and Projects from TAing the 1/26/15 session of PDX Code
 |2/9 - 2/13 | Developed better understanding of standard methods and attributes in classes, finished games |
 |2/17 - 2/20 | Covered advanced topics in OOP, presented finished games, began storefront project |
 |2/23 - 2/27 | Worked further with OOP, Continued storefront projects  |
-|3/2 - 3/5 | Shifted gears to HTML/CSS/JS |
+|3/2 - 3/5 | Shifted gears to HTML/CSS/JS, Built simple layouts and websites, added JS for client-side functionality |
+|3/8 - 3/13 | Focused on javascript, | 

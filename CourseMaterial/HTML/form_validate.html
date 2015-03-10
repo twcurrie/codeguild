@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<form method="post" id="registration">
+    <fieldset>
+        <legend>
+            Register
+        </legend>
+        <div id="errors" style="color: red;"></div>
+        <label>
+            Username:
+            <input type="text" name="username" id="username">
+        </label>
+        <label>
+            Email:
+            <input type="text" name="email" id="email">
+        </label>
+        <label>
+            Password:
+            <input type="password" name="password" id="password">
+        </label>
+        <label>
+            Verify Password:
+            <input type="password" name="verify-password" id="verify-password">
+        </label>
+        <label>
+            Date of Birth (Must be 21 or over):
+            <input type="date" name="dateofbirth" id="dateofbirth">
+        </label>
+
+        <input type="submit" value="Register">
+
+    </fieldset>
+</form>
+<script>
+    var regForm = document.getElementById("registration");
+
+    function validateForm() {
+        /* how could we organize this code and make it more reusable? */
+        var errors = document.getElementById("errors");
+        var error_list = [];
+        var username = document.getElementById("username").value;
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        var verifyPassword = document.getElementById("verify-password").value;
+        var dobValue = document.getElementById("dateofbirth").value;
+        var dob = new Date(dobValue);
+        var now = new Date();
+        var ageDiff = new Date()
+        var nowMS = now.getTime();
+        var dobMS = dob.getTime();
+        var iDiff= nowMS - dobMS;
+        ageDiff.setTime(iDiff);
+        var age = parseInt(ageDiff.getFullYear()) - 1970;
+
+        if (password != verifyPassword) {
+            error_list.push("Password and Verify Password must match");
+        }
+
+        if (password.length < 8) {
+            error_list.push("Password must be at least 8 letters or numbers.");
+        }
+
+        if (username.length < 3) {
+            error_list.push("Username must be at least 3 letters or numbers.");
+        }
+
+        if (email.length < 3) {
+            error_list.push("Email must be at least 3 letters or numbers.");
+        }
+
+        if (age < 21) {
+            error_list.push("Age must be over 21");
+        }
+
+        errors.innerHTML = error_list.join("<br>");
+    }
+    regForm.addEventListener("submit", function(event){
+        event.preventDefault();
+        validateForm();
+    });
+
+
+</script>
+</body>
+</html>

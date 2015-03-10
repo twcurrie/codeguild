@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>
+        Home of Kevin Ernest Long
+    </title>
+    <!--<link rel="stylesheet" type="text/css" href="styles.css">-->
+    <!--<script src="main.js"></script>-->
+</head>
+<body>
+<header>
+    <div class="columnSide left">
+        <div class="title">
+            Kevin Ernest Long
+        </div>
+
+        <div class="subtitle">
+            Geek at Large
+        </div>
+
+    </div>
+
+    </div>
+</header>
+<nav>
+</nav>
+<aside>
+    Aside
+</aside>
+
+<footer>
+    &copy; 2015
+</footer>
+<section>
+    <article>
+        <table id="cart-1" border="1">
+            <tr class="cart-headings">
+                <th>
+                    Line
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    Product Code
+                </th>
+                <th>
+                    Product Description
+                </th>
+                <th>
+                    Price Each
+                </th>
+                <th>
+                    Subtotal
+                </th>
+            </tr>
+            <tr class="cart-line">
+                <td class="line-number">
+                    1
+                </td>
+                <td class="line-quantity">
+                    <input type="number" value="11">
+                </td>
+                <td class="line-product-code">
+                    WIDGET1234
+                </td>
+                <td class="line-procuct-description">
+                    T-Shirt: Color: Black; Size: XXL;
+                </td>
+                <td class="line-price-each">
+                    3
+                </td>
+                <td class="line-subtotal">
+                    130
+                </td>
+                <td class="line-actions">
+                    <a href="#remove">Remove</a>
+                </td>
+            </tr>
+            <tr class="cart-line">
+                <td class="line-number">
+                    2
+                </td>
+                <td class="line-quantity">
+                    <input type="number" value="22">
+                </td>
+                <td class="line-product-code">
+                    WIDGET1234
+                </td>
+                <td class="line-procuct-description">
+                    T-Shirt: Color: Black; Size: XXL;
+                </td>
+                <td class="line-price-each">
+                    13
+                </td>
+                <td class="line-subtotal">
+                    130
+                </td>
+                <td class="line-actions">
+                    <a href="#remove">Remove</a>
+                </td>
+            </tr>
+            <tr class="cart-line-total">
+                <td class="line-number" colspan="5" align="right">
+                    Total:
+                </td>
+                <td id="cart-total">
+                    240
+                </td>
+                <td class="line-actions">
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+    </article>
+</section>
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var table = document.getElementById("cart-1");
+        var lines = table.getElementsByClassName("cart-line")
+        var line_count = lines.length;
+
+
+        var getTotal = function () {
+            var total = 0;
+
+            for (var i = 0; i < line_count; i++) {
+                var line = lines[i];
+
+                var qty = line.getElementsByClassName("line-quantity")[0];
+                var quantity = parseFloat(qty.getElementsByTagName("input")[0].value);
+
+                var price = parseFloat(line.getElementsByClassName("line-price-each")[0].innerHTML);
+                var subtotalElement = line.getElementsByClassName("line-subtotal")[0];
+
+                var subTotal = quantity * price;
+                subtotalElement.innerHTML = subTotal;
+                total += subTotal;
+            }
+            var totalElement = document.getElementById("cart-total");
+            totalElement.innerHTML = total;
+        };
+
+        for (var c = 0; c < line_count; c++) {
+            var line = lines[c];
+            var quantityElement = line.getElementsByTagName("input")[0];
+            quantityElement.addEventListener("change", function () {
+                getTotal();
+            });
+        }
+        getTotal();
+    });
+
+</script>
+</body>
+</html>

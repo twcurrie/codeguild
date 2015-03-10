@@ -1,0 +1,126 @@
+<style>
+    #cart-1 .template { display: none; }
+    #cart-1 td { width: 130px;}
+</style>
+<h1>Cart</h1>
+<table id="cart-1" border="1">
+    <tr class="cart-headings">
+        <th>Quantity</th>
+        <th>Product Code</th>
+        <th>Product Description</th>
+        <th>Price Each</th>
+        <th>Subtotal</th>
+        <th>Actions</th>
+    </tr>
+    <tr class="cart-line template" id="cart-template">
+        <td><input class="quantity" type="number" value="0"></td>
+        <td><select class="product-code">
+            <option data-price="4" data-desc="Widget">PC01</option>
+            <option data-price="5" data-desc="Gadget">PC02</option>
+            <option data-price="6" data-desc="Device">PC03</option>
+        </select></td>
+        <td class="product-description">Product Description</td>
+        <td class="price-each">0</td>
+        <td class="subtotal">0</td>
+        <td class="actions">
+            <button class="removeRow">Remove</button>
+            <button class="insertRow">Insert</button>
+        </td>
+    </tr>
+    <tr class="cart-total">
+        <td class="number" colspan="5" align="right">Total:</td>
+        <td id="cart-total">240</td>
+        <td class="actions">
+            <button id="add-line">Add Line</button>
+        </td>
+    </tr>
+</table>
+
+<script>
+
+    function Cart(table) {
+
+        function updateSubtotal(line) {
+            var quantity = parseFloat(line.getElementsByClassName("quantity")[0].value);
+            var price = parseFloat(line.getElementsByClassName("price-each")[0].innerHTML);
+            var subtotal = quantity * price;
+            var subtotalElement = line.getElementsByClassName("subtotal")[0];
+            subtotalElement.innerHTML = subtotal;
+            return subtotal;
+        }
+
+        function updateTotals() {
+            var lines = table.getElementsByClassName("cart-line");
+            var line_count = lines.length;
+            var total = 0;
+
+            for (var i = 0; i < line_count; i++) {
+                var line = lines[i];
+                var price = line.getElementsByClassName("product-code")[0].selectedOptions[0].dataset.price;
+                var desc = line.getElementsByClassName("product-code")[0].selectedOptions[0].dataset.desc;
+                line.getElementsByClassName("price-each")[0].innerHTML = price;
+                line.getElementsByClassName("product-description")[0].innerHTML = desc;
+                
+                total += updateSubtotal(line);
+            }
+            var totalElement = document.getElementById("cart-total");
+            totalElement.innerHTML = String(total);
+            
+        }
+
+        function Row() {
+            var row = document.getElementById('cart-template').cloneNode(true);
+            row.classList.remove("template");
+            row.removeAttribute("id");
+            row.getElementsByClassName("quantity")[0].value = 0;
+                
+            addActionListeners(row);
+            return row;
+        }
+
+        function addLine() {
+            var existingRow = table.getElementsByClassName("cart-total")[0];
+            var row = Row();
+            row.getElementsByClassName("product-code")[0].selectedIndex = 2;
+            insertAbove(row, existingRow);
+        }
+
+        function insertRow(event) {
+            var existingRow = event.target.parentElement.parentElement;
+            insertAbove(Row(), existingRow);
+        }
+
+        function insertAbove(row, existingRow) {
+            existingRow.parentElement.insertBefore(row, existingRow);
+            updateTotals();
+        }
+
+        function removeRow(event) {
+            event.target.parentElement.parentElement.remove();
+            updateTotals();
+        }
+
+        function addActionListeners(line) {
+            line.getElementsByClassName("product-code")[0].addEventListener("change", updateTotals);
+            line.getElementsByTagName("input")[0].addEventListener("change", updateTotals);
+            line.getElementsByClassName("removeRow")[0].addEventListener("click", removeRow);
+            line.getElementsByClassName("insertRow")[0].addEventListener("click", insertRow);
+        }
+
+        document.getElementById("add-line").addEventListener("click", addLine);
+
+        return {
+            updateTotals: updateTotals,
+            addLine: addLine
+        }
+    }
+
+    //DOCUMENT READY - PAGE EXISTS
+    document.addEventListener("DOMContentLoaded", function () {
+        var cart = Cart(document.getElementById("cart-1"));
+        cart.addLine();
+        cart.addLine();
+        cart.updateTotals();
+    })
+
+</script>
